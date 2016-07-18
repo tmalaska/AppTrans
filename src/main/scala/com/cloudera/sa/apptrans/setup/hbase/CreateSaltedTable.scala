@@ -1,5 +1,7 @@
 package com.cloudera.sa.apptrans.setup.hbase
 
+import java.io.File
+
 import org.apache.commons.lang.StringUtils
 import org.apache.hadoop.hbase.{HBaseConfiguration, HColumnDescriptor, HTableDescriptor, TableName}
 import org.apache.hadoop.hbase.client.ConnectionFactory
@@ -14,14 +16,17 @@ object CreateSaltedTable {
   def main(args:Array[String]): Unit = {
 
     if (args.length == 0) {
-      println("")
+      println("<tableName> <columnFamily> <regionCount> <numOfSalts> <hbaseConfigFolder>")
     }
     val tableName = args(0)
     val columnFamilyName = args(1)
     val regionCount = args(2).toInt
     val numOfSalts = args(3).toInt
+    val hbaseConfigFolder = args(4)
 
     val conf = HBaseConfiguration.create()
+
+    conf.addResource(new File(hbaseConfigFolder + "hbase-site.xml").toURI.toURL)
 
     val connection = ConnectionFactory.createConnection(conf)
 

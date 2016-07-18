@@ -46,9 +46,9 @@ solrctl instancedir --create app-event-collection app-event-collection
 solrctl collection --create app-event-collection -s 3 -r 2 -m 3
 
 #Set up HBase Table
-hadoop jar AppTrans.jar com.cloudera.sa.apptrans.setup.hbase.CreateSaltedTable app-event f 6 6
+hadoop jar AppTrans.jar com.cloudera.sa.apptrans.setup.hbase.CreateSaltedTable app-event f 6 6 /opt/cloudera/parcels/CDH/lib/hbase/conf/
 
-hadoop jar AppTrans.jar com.cloudera.sa.apptrans.setup.hbase.CreateSaltedTable account-mart f 6 6
+hadoop jar AppTrans.jar com.cloudera.sa.apptrans.setup.hbase.CreateSaltedTable account-mart f 6 6 /opt/cloudera/parcels/CDH/lib/hbase/conf/
 
 #Spark Streaming to SolR
 ##Run Spark to SolR
