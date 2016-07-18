@@ -47,11 +47,13 @@ solrctl collection --create app-event-collection -s 3 -r 2 -m 3
 
 #Set up HBase Table
 hadoop jar AppTrans.jar com.cloudera.sa.apptrans.setup.hbase.CreateSaltedTable app-event f 6 6
+
 hadoop jar AppTrans.jar com.cloudera.sa.apptrans.setup.hbase.CreateSaltedTable account-mart f 6 6
 
 #Spark Streaming to SolR
 ##Run Spark to SolR
 export JAVA_HOME=/opt/jdk1.8.0_91/
+
 spark-submit --class com.cloudera.sa.apptrans.streaming.ingestion.solr.SparkStreamingAppEventToSolR \
 --master yarn --deploy-mode client --executor-memory 512MB --num-executors 2 --executor-cores 1 \
 AppTrans.jar \
@@ -69,6 +71,7 @@ Go to the Hue Dashboard Page
 #Spark Streaming to Kudu
 ##Run Spark to Kudu
 export JAVA_HOME=/opt/jdk1.8.0_91/
+
 spark-submit --class com.cloudera.sa.apptrans.streaming.ingestion.kudu.SparkStreamingAppEventToKudu \
 --master yarn --deploy-mode client --executor-memory 512MB --num-executors 2 --executor-cores 1 \
 AppTrans.jar \
