@@ -31,13 +31,16 @@ kafka-console-consumer \
 
 #Set up Kudu Tables
 Run these in HUE
-kudu/card/createCustomerMart.sql
-kudu/card/createCustomerTrans.sql
+kudu/apptrans/createAccountMart.sql
+kudu/apptrans/createAppEvent.sql
 
 #Set up SolR Collection
 solrctl instancedir --generate app-event-collection
+
 switch out the schema.xml with the following file solr/card/schema.xml
+
 solrctl instancedir --create app-event-collection app-event-collection
+
 solrctl collection --create app-event-collection -s 3 -r 2 -m 3
 
 #Set up HBase Table
