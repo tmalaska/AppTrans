@@ -30,8 +30,10 @@ kafka-console-consumer \
 --topic app-event-input
 
 #Set up Kudu Tables
-Run these in HUE
+Run these in HUE in the impala window
+
 kudu/apptrans/createAccountMart.sql
+
 kudu/apptrans/createAppEvent.sql
 
 #Set up SolR Collection
