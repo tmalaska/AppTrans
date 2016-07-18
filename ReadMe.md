@@ -37,7 +37,7 @@ kudu/apptrans/createAppEvent.sql
 #Set up SolR Collection
 solrctl instancedir --generate app-event-collection
 
-switch out the schema.xml with the following file solr/card/schema.xml
+switch out the schema.xml with the following file app-event-collection/conf/schema.xml
 
 solrctl instancedir --create app-event-collection app-event-collection
 
