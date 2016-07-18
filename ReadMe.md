@@ -14,7 +14,7 @@ kafka-topics --zookeeper ted-training-1-1.vpc.cloudera.com:2181 \
 --partition 2 --replication-factor 2 --create --topic app-event-input
 
 #Running the generator
-java -cp AppTrans.jar com.cloudera.sa.example.card.generator.CustomerTransProducer \
+java -cp AppTrans.jar com.cloudera.sa.apptrans.generator.AppEventProducer \
 ted-training-1-4.vpc.cloudera.com:9092,ted-training-1-5.vpc.cloudera.com:9092 \
 app-event-input 100 0 5 async 1000 10000 20000 ./data/uber_bay_area_lat_lon.csv 1000
 
