@@ -8,7 +8,7 @@ import org.apache.spark.sql.Row
 @XmlAccessorType(XmlAccessType.FIELD)
 class AccountMart(val accountId:String,
                   val appId:String,
-                  val singOnCount:Long,
+                  val signOnCount:Long,
                   val winCount:Long,
                   val loseCount:Long,
                   val purchaseTotal:Double,
@@ -21,7 +21,7 @@ class AccountMart(val accountId:String,
   override def toString():String = {
     accountId + "," +
       appId + ","+
-      singOnCount + "," +
+      signOnCount + "," +
       winCount + "," +
       loseCount + "," +
       purchaseTotal + "," +
@@ -31,6 +31,21 @@ class AccountMart(val accountId:String,
       paymentDebitCount + "," +
       paymentPaypalTotal + "," +
       paymentPaypalCount
+  }
+
+  def + (am: AccountMart): AccountMart = {
+    new AccountMart(accountId,
+    appId,
+    signOnCount + am.signOnCount,
+    winCount + am.winCount,
+    loseCount + am.loseCount,
+    purchaseTotal + am.purchaseTotal,
+    paymentCreditTotal + am.paymentCreditTotal,
+    paymentCreditCount + am.paymentCreditCount,
+    paymentDebitTotal + am.paymentDebitTotal,
+    paymentDebitCount + am.paymentDebitCount,
+    paymentPaypalTotal + am.paymentPaypalTotal,
+    paymentPaypalCount + am.paymentPaypalCount)
   }
 }
 

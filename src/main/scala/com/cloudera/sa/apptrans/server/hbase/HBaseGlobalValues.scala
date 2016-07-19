@@ -4,7 +4,8 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hbase.client.{Connection, ConnectionFactory}
 
 object HBaseGlobalValues {
-  var accountTableName = "account"
+  var appEventTableName = "app-event"
+  var accountMartTableName = "account-mart"
   var numberOfSalts = 10000
   var connection:Connection = null
 

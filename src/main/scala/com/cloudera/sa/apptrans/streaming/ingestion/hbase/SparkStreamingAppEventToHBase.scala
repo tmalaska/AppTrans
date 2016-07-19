@@ -2,7 +2,7 @@ package com.cloudera.sa.apptrans.streaming.ingestion.hbase
 
 import java.io.File
 
-import com.cloudera.sa.apptrans.model.AppEventBuilder
+import com.cloudera.sa.apptrans.model.{AccountMart, AppEventBuilder}
 import org.apache.hadoop.hbase.spark.HBaseContext
 import org.apache.hadoop.hbase.spark.HBaseDStreamFunctions._
 import kafka.serializer.StringDecoder
@@ -47,7 +47,6 @@ object SparkStreamingAppEventToHBase {
     println("tableName:" + tableName)
     println("numOfSalts:" + numOfSalts)
 
-
     val sc:SparkContext = if (runLocal) {
       val sparkConfig = new SparkConf()
       sparkConfig.set("spark.broadcast.compress", "false")
@@ -72,23 +71,29 @@ object SparkStreamingAppEventToHBase {
 
     val hbaseContext = new HBaseContext(sc, conf)
 
-    val customersDStream = messageStream.map{case(key, value) => AppEventBuilder.build(value)}
+    val appEventDStream = messageStream.map{case(key, value) => AppEventBuilder.build(value)}
 
-    customersDStream.hbaseBulkPut(hbaseContext, TableName.valueOf(tableName), customer => {
+    appEventDStream.hbaseBulkPut(hbaseContext, TableName.valueOf(tableName), customer => {
       AppEventHBaseHelper.generatePut(customer, numOfSalts)
     })
 
-/*
-    hbaseContext.streamForeachPartition(customersDStream, (it:Iterator[CustomerTran], conn:Connection) => {
-      val m = conn.getBufferedMutator(TableName.valueOf(tableName))
-      it.foreach(customer => {
-        val put = CustomerTransHBaseHelper.generatePut(customer, numOfSalts)
-        m.mutate(put)
-      })
-      m.flush()
-      m.close()
+    val mapDStream = appEventDStream.map(appEvent =>
+      (appEvent.accountId + "," + appEvent.appId, appEvent.toAccountMart()))
+
+    val aggDStream = mapDStream.updateStateByKey[AccountMart]((a:Seq[AccountMart], b:Option[AccountMart]) => {
+      val aSum:AccountMart = a.reduce((a1, a2) => a1 + a2)
+      val optional = if (b.isEmpty) {
+        Option(aSum)
+      } else {
+        Option(aSum + b.get)
+      }
+      optional
+    }).map(kv => {kv._2})
+
+
+    aggDStream.hbaseBulkPut(hbaseContext, TableName.valueOf(tableName), accountMart => {
+      AppEventHBaseHelper.generatePut(accountMart, numOfSalts)
     })
-*/
 
     ssc.checkpoint(checkpointFolder)
     ssc.start()

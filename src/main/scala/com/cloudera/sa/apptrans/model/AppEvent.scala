@@ -42,6 +42,32 @@ class AppEvent(val accountId: String,
       latitude,
       longitude)
   }
+
+  def toAccountMart():AccountMart = {
+    val signInCount = if (eventType.equals(AppEventConst.EVENT_TYPE_LOGIN)) 1 else 0
+    val winCount = if (eventType.equals(AppEventConst.EVENT_TYPE_WIN)) 1 else 0
+    val loseCount = if (eventType.equals(AppEventConst.EVENT_TYPE_LOSE)) 1 else 0
+
+    val purchaseCreditTotal = if (eventType.equals(AppEventConst.PAYMENT_TYPE_CREDIT)) purchase else 0
+    val purchaseCreditCount = if (eventType.equals(AppEventConst.PAYMENT_TYPE_CREDIT)) 1 else 0
+    val purchaseDebitTotal = if (eventType.equals(AppEventConst.PAYMENT_TYPE_CREDIT)) purchase else 0
+    val purchaseDebitCount = if (eventType.equals(AppEventConst.PAYMENT_TYPE_CREDIT)) 1 else 0
+    val purchasePaypalTotal = if (eventType.equals(AppEventConst.PAYMENT_TYPE_CREDIT)) purchase else 0
+    val purchasePaypalCount = if (eventType.equals(AppEventConst.PAYMENT_TYPE_CREDIT)) 1 else 0
+
+    new AccountMart(accountId,
+      appId,
+      signInCount,
+      winCount,
+      loseCount,
+      purchase,
+      purchaseCreditTotal,
+      purchaseCreditCount,
+      purchaseDebitTotal,
+      purchaseDebitCount,
+      purchasePaypalTotal,
+      purchasePaypalCount)
+  }
 }
 
 object AppEventBuilder {

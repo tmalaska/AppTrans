@@ -21,17 +21,18 @@ class HBaseServiceLayer {
   }
 
   @GET
-  @Path("account/{accountId}")
+  @Path("appEvent/{accountId}/{appId}")
   @Produces(Array(MediaType.APPLICATION_JSON))
   def getAccount (@PathParam("accountId") accountId:String,
+                  @PathParam("appId") appId:String,
                           @QueryParam("startTime") startTime:String = Long.MaxValue.toString,
                           @QueryParam("endTime")  endTime:String = Long.MinValue.toString): List[AppEvent] = {
 
-    val table = HBaseGlobalValues.connection.getTable(TableName.valueOf(HBaseGlobalValues.accountTableName))
+    val table = HBaseGlobalValues.connection.getTable(TableName.valueOf(HBaseGlobalValues.appEventTableName))
 
     val scan = new Scan()
-    scan.setStartRow(AppEventHBaseHelper.generateRowKey(accountId, startTime.toLong, HBaseGlobalValues.numberOfSalts))
-    scan.setStopRow(AppEventHBaseHelper.generateRowKey(accountId, endTime.toLong, HBaseGlobalValues.numberOfSalts))
+    scan.setStartRow(AppEventHBaseHelper.generateRowKey(accountId, appId, startTime.toLong, HBaseGlobalValues.numberOfSalts))
+    scan.setStopRow(AppEventHBaseHelper.generateRowKey(accountId, appId, endTime.toLong, HBaseGlobalValues.numberOfSalts))
 
 
     val scannerIt = table.getScanner(scan).iterator()
@@ -47,17 +48,16 @@ class HBaseServiceLayer {
   }
 
   @GET
-  @Path("account/ts/{accountId}")
+  @Path("accountMart/{accountId}/{appId}")
   @Produces(Array(MediaType.APPLICATION_JSON))
   def getAccountLineage (@PathParam("accountId") accountId:String,
-                          @QueryParam("startTime") startTime:String = Long.MaxValue.toString,
-                          @QueryParam("endTime")  endTime:String = Long.MinValue.toString): List[AppEvent] = {
+                         @PathParam("appId") appId:String): List[AppEvent] = {
 
-    val table = HBaseGlobalValues.connection.getTable(TableName.valueOf(HBaseGlobalValues.accountTableName))
+    val table = HBaseGlobalValues.connection.getTable(TableName.valueOf(HBaseGlobalValues.accountMartTableName))
 
     val scan = new Scan()
-    scan.setStartRow(AppEventHBaseHelper.generateRowKey(accountId, startTime.toLong, HBaseGlobalValues.numberOfSalts))
-    scan.setStopRow(AppEventHBaseHelper.generateRowKey(accountId, endTime.toLong, HBaseGlobalValues.numberOfSalts))
+    scan.setStartRow(AppEventHBaseHelper.generateRowKey(accountId, appId, HBaseGlobalValues.numberOfSalts))
+    scan.setStopRow(AppEventHBaseHelper.generateRowKey(accountId, appId, HBaseGlobalValues.numberOfSalts))
     val scannerIt = table.getScanner(scan).iterator()
 
     val appEventList = new mutable.MutableList[AppEvent]

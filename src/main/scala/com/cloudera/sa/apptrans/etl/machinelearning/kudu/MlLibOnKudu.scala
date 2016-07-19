@@ -113,7 +113,7 @@ object MlLibOnKudu {
     val array = Array(accountMart.purchaseTotal,
       accountMart.loseCount.toDouble,
       accountMart.winCount.toDouble,
-      accountMart.singOnCount.toDouble,
+      accountMart.signOnCount.toDouble,
       accountMart.paymentCreditCount.toDouble,
       accountMart.paymentCreditTotal.toDouble,
       accountMart.paymentDebitCount.toDouble,
