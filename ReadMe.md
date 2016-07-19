@@ -88,11 +88,16 @@ tmp/checkpoint
 select * from customer_tran_kudu;
 
 ##Rest Server
-com.cloudera.sa.example.card.server.kudu.KuduRestServer \
-4242 /
-ted-training-1-1.vpc.cloudera.com  \
-customer_mart_kudu \
-customer_trans_kudu
+com.cloudera.sa.example.card.server.kudu.KuduRestServer 4242 \
+ted-training-1-2.vpc.cloudera.com app_event_kudu account_mart_kudu
+
+##Run Spark SQL Example
+spark-submit --class com.cloudera.sa.apptrans.sql.kudu.KuduSimpleSums \
+--master yarn --deploy-mode client --executor-memory 512MB --num-executors 2 --executor-cores 1 \
+AppTrans.jar \
+c \
+ted-training-1-2.vpc.cloudera.com \
+account_mart_kudu
 
 #Spark Streaming to HBase
 ##Run Spark to HBase
@@ -118,6 +123,7 @@ com.cloudera.sa.example.card.server.hbase.HBaseRestService \
 /opt/cloudera/parcels/CDH/lib/hbase/conf/  \
 6 \
 customer_trans_kudu
+
 
 
 

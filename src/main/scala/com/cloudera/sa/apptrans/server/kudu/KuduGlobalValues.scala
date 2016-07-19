@@ -12,6 +12,11 @@ object KuduGlobalValues {
   def init(kuduMaster:String,
            appEventTableName:String,
            accountMartTableName:String): Unit = {
+
+    println("kuduMaster:" + kuduMaster)
+    println("appEventTableName:" + appEventTableName)
+    println("accountMartTableName:" + accountMartTableName)
+
     kuduClient = new KuduClient.KuduClientBuilder(kuduMaster).build()
     this.appEventTableName = appEventTableName
     this.accountMartTableName = accountMartTableName

@@ -68,19 +68,20 @@ class KuduServiceLayer {
   @Produces(Array(MediaType.APPLICATION_JSON))
   def getAccountMartList (@PathParam("accountId") accountId:String): Array[AccountMart] = {
     val kuduClient = KuduGlobalValues.kuduClient
-    val custTable = KuduGlobalValues.kuduClient.openTable(KuduGlobalValues.accountMartTableName)
+    val accountMartTable = KuduGlobalValues.kuduClient.openTable(KuduGlobalValues.accountMartTableName)
 
-    val schema = custTable.getSchema
-    val accountIdCol = schema.getColumn(accountId)
+    val schema = accountMartTable.getSchema
+    val accountIdCol = schema.getColumn("account_id")
 
-    val scanner = kuduClient.newScannerBuilder(custTable).
-      addPredicate(KuduPredicate.
+    val scanner = kuduClient.newScannerBuilder(accountMartTable)
+        .addPredicate(KuduPredicate.
         newComparisonPredicate(accountIdCol, KuduPredicate.ComparisonOp.EQUAL, accountId)).
       build()
 
     val accountMartList = new mutable.MutableList[AccountMart]
 
     while (scanner.hasMoreRows) {
+
       val rows = scanner.nextRows()
       while (rows.hasNext) {
         val rowResult = rows.next()
@@ -109,7 +110,7 @@ class KuduServiceLayer {
   @Produces(Array(MediaType.APPLICATION_JSON))
   def getAppEventLineage (@PathParam("accountId") accountId:String,
                           @QueryParam("startTime") startTime:Long = Long.MaxValue,
-                          @QueryParam("endTime")  endTime:Long = Long.MinValue): List[AppEvent] = {
+                          @QueryParam("endTime")  endTime:Long = Long.MinValue): Array[AppEvent] = {
     val kuduClient = KuduGlobalValues.kuduClient
     val custTable = KuduGlobalValues.kuduClient.openTable(KuduGlobalValues.appEventTableName)
 
@@ -130,8 +131,10 @@ class KuduServiceLayer {
     val appEventList = new mutable.MutableList[AppEvent]
 
     while (scanner.hasMoreRows) {
+      println("-")
       val rows = scanner.nextRows()
       while (rows.hasNext) {
+        println("--")
         val rowResult = rows.next()
 
         val appEvent = new AppEvent(
@@ -150,6 +153,51 @@ class KuduServiceLayer {
       }
     }
 
-    appEventList.toList
+    appEventList.toArray
+  }
+
+  @GET
+  @Path("appEvent/{accountId}")
+  @Produces(Array(MediaType.APPLICATION_JSON))
+  def getAppEventLineage (@PathParam("accountId") accountId:String): Array[AppEvent] = {
+    val kuduClient = KuduGlobalValues.kuduClient
+    val custTable = KuduGlobalValues.kuduClient.openTable(KuduGlobalValues.appEventTableName)
+
+    val schema = custTable.getSchema
+    val accountIdCol = schema.getColumn("account_id")
+    val eventTimeStampCol = schema.getColumn("event_timestamp")
+
+    val scanner = kuduClient.newScannerBuilder(custTable).
+      addPredicate(KuduPredicate.
+        newComparisonPredicate(accountIdCol, KuduPredicate.ComparisonOp.EQUAL, accountId)).
+      batchSizeBytes(1000000).build()
+
+
+    val appEventList = new mutable.MutableList[AppEvent]
+
+    while (scanner.hasMoreRows) {
+      println("-")
+      val rows = scanner.nextRows()
+      while (rows.hasNext) {
+        println("--")
+        val rowResult = rows.next()
+
+        val appEvent = new AppEvent(
+          rowResult.getString("account_id"),
+          rowResult.getString("app_id"),
+          rowResult.getLong("event_timestamp"),
+          rowResult.getString("event_id"),
+          rowResult.getString("event_type"),
+          rowResult.getDouble("purchase"),
+          rowResult.getString("payment_type"),
+          rowResult.getString("session_id"),
+          rowResult.getDouble("latitude"),
+          rowResult.getDouble("longitude"))
+
+        appEventList += appEvent
+      }
+    }
+
+    appEventList.toArray
   }
 }

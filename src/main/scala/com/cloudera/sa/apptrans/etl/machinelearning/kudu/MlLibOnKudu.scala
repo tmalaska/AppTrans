@@ -15,7 +15,7 @@ object MlLibOnKudu {
 
     if (args.length == 0) {
       println("Args: <runLocal> <kuduMaster> " +
-        "<appTransTableName> " +
+        "<accountMartTableName> " +
         "<numOfCenters> " +
         "<numOfIterations> ")
       return

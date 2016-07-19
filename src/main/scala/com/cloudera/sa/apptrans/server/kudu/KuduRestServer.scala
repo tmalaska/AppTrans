@@ -8,21 +8,21 @@ object KuduRestServer {
   def main(args:Array[String]): Unit = {
 
     if (args.length == 0) {
-      println("<port> <KuduMaster> <customerTransTableName> <customerMartTableName>")
+      println("<port> <KuduMaster> <accountEventTableName> <appMartTableName>")
     }
 
     val port = args(0).toInt
     val kuduMaster = args(1)
-    val customerTransTableName = args(2)
-    val customerMartTableName = args(3)
+    val accountEventTableName = args(2)
+    val appMartTableName = args(3)
 
-    KuduGlobalValues.init(kuduMaster,customerTransTableName, customerMartTableName)
+    KuduGlobalValues.init(kuduMaster,accountEventTableName, appMartTableName)
 
     val server = new Server(port)
 
     val sh = new ServletHolder(classOf[ServletContainer])
     sh.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig")
-    sh.setInitParameter("com.sun.jersey.config.property.packages", "com.cloudera.sa.example.card.server.kudu")
+    sh.setInitParameter("com.sun.jersey.config.property.packages", "com.cloudera.sa.apptrans.server.kudu")
     sh.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true")
 
     val context = new Context(server, "/", Context.SESSIONS)
