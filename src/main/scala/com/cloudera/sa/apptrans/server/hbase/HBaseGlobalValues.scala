@@ -9,9 +9,12 @@ object HBaseGlobalValues {
   var numberOfSalts = 10000
   var connection:Connection = null
 
-  def init(conf:Configuration, numberOfSalts:Int, customerTableName:String): Unit = {
+  def init(conf:Configuration, numberOfSalts:Int,
+           appEventTableName:String,
+           accountMartTableName:String): Unit = {
     connection = ConnectionFactory.createConnection(conf)
     this.numberOfSalts = numberOfSalts
-    this.accountTableName = customerTableName
+    this.appEventTableName = appEventTableName
+    this.accountMartTableName = accountMartTableName
   }
 }

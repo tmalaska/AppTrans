@@ -16,12 +16,14 @@ object HBaseRestServer {
     val port = args(0).toInt
     val hbaseConfigFolder = args(1)
     val numberOfSalts = args(2).toInt
-    val customerTableName = args(3)
+    val appEventTableName = args(3)
+    val accountMartTableName = args(4)
 
     val conf = HBaseConfiguration.create()
     conf.addResource(new File(hbaseConfigFolder + "hbase-site.xml").toURI.toURL)
 
-    HBaseGlobalValues.init(conf, numberOfSalts, customerTableName)
+    HBaseGlobalValues.init(conf, numberOfSalts,
+      appEventTableName, accountMartTableName)
 
     val server = new Server(port)
 

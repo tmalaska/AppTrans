@@ -166,35 +166,4 @@ object SparkStreamingAppEventToKudu {
     session.flush()
     session.close()
   }
-
-  def sendMartToKudu(kuduAccountMartTable: String, it: Iterator[AppEvent], kuduClient: KuduClient): Unit = {
-    val table = kuduClient.openTable(kuduAccountMartTable)
-    val session = kuduClient.newSession()
-    session.setFlushMode(FlushMode.AUTO_FLUSH_BACKGROUND)
-
-    it.foreach(appEvent => {
-
-      val operation: Operation = table.newUpsert()
-
-      if (operation != null) {
-        val row = operation.getRow()
-
-        row.addString("account_id", appEvent.accountId)
-        row.addString("app_id", appEvent.appId)
-        row.addLong("event_timestamp", appEvent.eventTimestamp)
-        row.addString("event_id", appEvent.eventId)
-        row.addString("event_type", appEvent.eventType)
-        row.addDouble("purchase", appEvent.purchase)
-        row.addString("payment_type", appEvent.paymentType)
-        row.addString("session_id", appEvent.sessionId)
-        row.addDouble("latitude", appEvent.latitude)
-        row.addDouble("longitude", appEvent.longitude)
-
-        session.apply(operation)
-      }
-
-    })
-    session.flush()
-    session.close()
-  }
 }
